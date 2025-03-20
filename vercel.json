@@ -4,7 +4,7 @@
         "src": "api/app.py",
         "use": "@vercel/python",
         "config": {
-          "buildCommand": "pwd && ls -la ../../ && cp ../../requirements.txt . && ls -la && pip install -r requirements.txt"
+          "buildCommand": "pip install -r requirements.txt"
         }
       }
     ],

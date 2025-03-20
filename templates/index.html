@@ -1,0 +1,51 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Poker GTO Push/Fold Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; }
+        .container { max-width: 1200px; }
+        h1 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        table { margin-bottom: 40px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Poker GTO Push/Fold Calculator</h1>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="stack_size">Effective Stack Size (BB):</label>
+                <input type="number" step="0.5" name="stack_size" id="stack_size" value="{{ stack_size }}" class="form-control" style="width: 200px;">
+            </div>
+            <div class="form-group">
+                <label for="position">Position:</label>
+                <select name="position" id="position" class="form-control" style="width: 200px;">
+                    <option value="sb" {% if position == 'sb' %}selected{% endif %}>Small Blind (SB)</option>
+                    <option value="bb" {% if position == 'bb' %}selected{% endif %}>Big Blind (BB)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Calculate</button>
+        </form>
+
+        {% if sb_table %}
+            <h2>SB Push GTO Strategy for {{ stack_size }} BB</h2>
+            {{ sb_table | safe }}
+        {% endif %}
+
+        {% if bb_table %}
+            <h2>BB Call GTO Strategy for {{ stack_size }} BB</h2>
+            {{ bb_table | safe }}
+        {% endif %}
+    </div>
+</body>
+</html>

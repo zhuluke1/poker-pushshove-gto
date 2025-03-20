@@ -1,12 +1,10 @@
 {
-    "version": 2,
     "builds": [
       {
         "src": "api/app.py",
         "use": "@vercel/python",
         "config": {
-          "includeFiles": ["requirements.txt"],
-          "buildCommand": "pip install -r requirements.txt"
+          "buildCommand": "pwd && ls -la ../../ && cp ../../requirements.txt . && ls -la && pip install -r requirements.txt"
         }
       }
     ],
@@ -17,4 +15,3 @@
       }
     ]
   }
-  

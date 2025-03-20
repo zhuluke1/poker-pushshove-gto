@@ -1,3 +1,6 @@
 eval7
 numpy
 pandas
+streamlit
+plotly
+tqdm

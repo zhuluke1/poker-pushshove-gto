@@ -1,7 +1,11 @@
-# app.py
+# api/app.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # Add root directory to sys.path
+
 from flask import Flask, render_template, request
 import pandas as pd
-from gto_calculator import calculate_push_fold_gto
+from gto_calculator import calculate_push_fold_gto  # Now this should work
 
 app = Flask(__name__)
 

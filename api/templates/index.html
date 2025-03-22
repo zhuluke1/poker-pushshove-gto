@@ -1,51 +1,380 @@
-<!-- templates/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Poker GTO Push/Fold Calculator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GTO Range Visualizer</title>
+    <meta name="description" content="Advanced Poker GTO Push/Fold Calculator" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
     <style>
-        body { padding: 20px; }
-        .container { max-width: 1200px; }
-        h1 { margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
-        table { margin-bottom: 40px; }
-        .error { color: red; }
+        :root {
+            --bg-gradient: linear-gradient(to bottom right, #0f172a, #1e293b);
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: rgba(148, 163, 184, 0.2);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+            --highlight: rgba(59, 130, 246, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-gradient);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.5s forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+            max-width: 400px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform 0.4s, opacity 1s;
+        }
+        
+        button:active::after {
+            transform: scale(0, 0);
+            opacity: 0.3;
+            transition: 0s;
+        }
+        
+        .error {
+            color: #ef4444;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            background: rgba(239, 68, 68, 0.1);
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #ef4444;
+            animation: shake 0.5s;
+        }
+        
+        /* Table Styling */
+        .table-container {
+            overflow: auto;
+            border-radius: var(--radius);
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            animation-delay: 0.5s;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        
+        th {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            transition: var(--transition);
+        }
+        
+        tr:hover td {
+            background: var(--highlight);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 640px) {
+            .form-row {
+                display: flex;
+                gap: 1.5rem;
+            }
+            
+            .form-group {
+                flex: 1;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 0.75rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Cell highlighting based on value */
+        .high-value {
+            color: #10b981 !important;
+            font-weight: 600;
+        }
+        
+        .medium-value {
+            color: #f59e0b !important;
+        }
+        
+        .low-value {
+            color: #ef4444 !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Poker GTO Push/Fold Calculator</h1>
+        <h1 class="animate__animated animate__fadeInDown">GTO Range Visualizer</h1>
 
         {% if error %}
-            <p class="error">{{ error }}</p>
+            <div class="error animate__animated animate__shakeX">{{ error }}</div>
         {% endif %}
 
-        <form method="POST">
-            <div class="form-group">
-                <label for="stack_size">Effective Stack Size (BB):</label>
-                <input type="number" step="0.5" name="stack_size" id="stack_size" value="{{ stack_size }}" class="form-control" style="width: 200px;">
-            </div>
-            <div class="form-group">
-                <label for="position">Position:</label>
-                <select name="position" id="position" class="form-control" style="width: 200px;">
-                    <option value="sb" {% if position == 'sb' %}selected{% endif %}>Small Blind (SB)</option>
-                    <option value="bb" {% if position == 'bb' %}selected{% endif %}>Big Blind (BB)</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Calculate</button>
-        </form>
+        <div class="card">
+            <form method="POST" id="calculator-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stack_size">Effective Stack Size (BB):</label>
+                        <input type="number" step="0.5" name="stack_size" id="stack_size" value="{{ stack_size }}" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position:</label>
+                        <select name="position" id="position">
+                            <option value="sb" {% if position == 'sb' %}selected{% endif %}>Small Blind (SB)</option>
+                            <option value="bb" {% if position == 'bb' %}selected{% endif %}>Big Blind (BB)</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" id="calculate-btn">
+                    <span>Calculate Ranges</span>
+                    <div class="loading" id="loading"></div>
+                </button>
+            </form>
+        </div>
 
         {% if sb_table %}
             <h2>SB Push GTO Strategy for {{ stack_size }} BB</h2>
-            {{ sb_table | safe }}
+            <div class="table-container">
+                {{ sb_table | safe }}
+            </div>
         {% endif %}
 
         {% if bb_table %}
             <h2>BB Call GTO Strategy for {{ stack_size }} BB</h2>
-            {{ bb_table | safe }}
+            <div class="table-container">
+                {{ bb_table | safe }}
+            </div>
         {% endif %}
     </div>
+
+    <script>
+        // Show loading indicator while form is submitting
+        document.getElementById('calculator-form').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('calculate-btn').disabled = true;
+        });
+
+        // Add color coding to frequency values
+        document.addEventListener('DOMContentLoaded', function() {
+            const tables = document.querySelectorAll('table');
+            
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        const valueCell = cells[cells.length - 1];
+                        const valueText = valueCell.textContent.trim();
+                        const value = parseFloat(valueText);
+                        
+                        if (value >= 0.8) {
+                            valueCell.classList.add('high-value');
+                        } else if (value >= 0.4) {
+                            valueCell.classList.add('medium-value');
+                        } else {
+                            valueCell.classList.add('low-value');
+                        }
+                        
+                        // Add animation to rows
+                        row.style.animation = `fadeIn 0.3s forwards`;
+                        row.style.animationDelay = `${0.1 * (Array.from(rows).indexOf(row))}s`;
+                        row.style.opacity = 0;
+                    }
+                });
+            });
+            
+            // Add classes to tables for styling
+            tables.forEach(table => {
+                table.classList.add('table');
+            });
+        });
+    </script>
 </body>
 </html>

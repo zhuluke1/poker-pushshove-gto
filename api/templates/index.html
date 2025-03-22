@@ -551,7 +551,7 @@
                         hand = `${ranks[i]}${ranks[j]}s`;
                         handType = 'suited';
                     } else {
-                        hand = `${ranks[i]}${ranks[j]}o`;
+                        hand = `${ranks[j]}${ranks[i]}o`;  // Fixed: Swap ranks for offsuit hands
                         handType = 'offsuit';
                     }
 

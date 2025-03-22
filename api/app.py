@@ -54,7 +54,7 @@ def index():
 
 @cache.memoize(timeout=3600)
 def get_cached_gto(stack_size):
-    return calculate_push_fold_gto(stack_size)
+    return calculate_push_fold_gto(stack_size, sb_pos=True)
 
 @app.route('/download/<strategy>/<float:stack_size>')
 def download(strategy, stack_size):

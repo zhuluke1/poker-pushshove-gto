@@ -4,3 +4,4 @@ pandas==2.2.3
 flask==3.0.3
 tqdm==4.66.5
 gunicorn==23.0.0
+flask-caching==2.3.0

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -174,47 +173,159 @@
             animation: shake 0.5s;
         }
         
-        /* Table Styling */
-        .table-container {
-            overflow: auto;
-            border-radius: var(--radius);
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--border);
+        /* Range Chart Styling */
+        .range-chart-container {
             margin-bottom: 2rem;
             opacity: 0;
             animation: fadeIn 0.5s forwards;
             animation-delay: 0.5s;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+        .range-chart {
+            display: grid;
+            grid-template-columns: repeat(13, 40px);
+            grid-template-rows: repeat(13, 40px);
+            gap: 2px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 5px;
+            position: relative;
+            width: fit-content;
         }
         
-        th {
+        .range-cell {
             background: rgba(15, 23, 42, 0.6);
-            padding: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-        }
-        
-        td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 500;
             color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
             transition: var(--transition);
         }
         
-        tr:hover td {
-            background: var(--highlight);
+        .range-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
-        tr:last-child td {
-            border-bottom: none;
+        /* Differentiate pairs, suited, and offsuit hands with background colors */
+        .range-cell.pair {
+            background: rgba(15, 23, 42, 0.8); /* Slightly darker for pairs */
+        }
+        
+        .range-cell.suited {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.3); /* Blue border for suited */
+        }
+        
+        .range-cell.offsuit {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.3); /* Red border for offsuit */
+        }
+        
+        /* Tooltip Styling */
+        .range-cell .tooltip {
+            visibility: hidden;
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 20;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+        }
+        
+        .range-cell:hover .tooltip {
+            visibility: visible;
+        }
+        
+        /* Labels for rows and columns */
+        .range-labels {
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .row-labels {
+            top: 5px;
+            left: -30px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .col-labels {
+            top: -30px;
+            left: 35px;
+            display: flex;
+            gap: 2px;
+        }
+        
+        .label {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Legend Styling */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem; /* Increased gap between legend items */
+            margin-top: 2.5rem; /* Increased margin for more space above */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* Increased gap between color box and text */
+            font-size: 1rem; /* Slightly larger font for readability */
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem; /* Add padding for a more spacious look */
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.3); /* Subtle background for each item */
+        }
+
+        .legend-color {
+            width: 24px; /* Slightly larger color box */
+            height: 24px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        /* Download Button */
+        .download-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .download-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
         }
         
         /* Responsive Design */
@@ -226,6 +337,28 @@
             
             .form-group {
                 flex: 1;
+            }
+            
+            .range-chart {
+                grid-template-columns: repeat(13, 40px);
+                grid-template-rows: repeat(13, 40px);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .range-chart {
+                grid-template-columns: repeat(13, 30px);
+                grid-template-rows: repeat(13, 30px);
+            }
+            
+            .range-cell {
+                font-size: 0.6rem;
+            }
+            
+            .label {
+                width: 30px;
+                height: 30px;
+                font-size: 0.7rem;
             }
         }
         
@@ -273,20 +406,6 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        /* Cell highlighting based on value */
-        .high-value {
-            color: #10b981 !important;
-            font-weight: 600;
-        }
-        
-        .medium-value {
-            color: #f59e0b !important;
-        }
-        
-        .low-value {
-            color: #ef4444 !important;
-        }
     </style>
 </head>
 <body>
@@ -319,17 +438,47 @@
             </form>
         </div>
 
-        {% if sb_table %}
+        {% if sb_strategy %}
             <h2>SB Push GTO Strategy for {{ stack_size }} BB</h2>
-            <div class="table-container">
-                {{ sb_table | safe }}
+            <div class="range-chart-container">
+                <div class="range-chart" id="sb-range-chart"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(0, 255, 0);"></span>
+                        <span>100% Frequency</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(255, 255, 0);"></span>
+                        <span>50% Frequency</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(255, 0, 0);"></span>
+                        <span>0% Frequency</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('download', strategy='sb', stack_size=stack_size) }}" class="download-btn">Download SB CSV</a>
             </div>
         {% endif %}
 
-        {% if bb_table %}
+        {% if bb_strategy %}
             <h2>BB Call GTO Strategy for {{ stack_size }} BB</h2>
-            <div class="table-container">
-                {{ bb_table | safe }}
+            <div class="range-chart-container">
+                <div class="range-chart" id="bb-range-chart"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(0, 255, 0);"></span>
+                        <span>100% Frequency</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(255, 255, 0);"></span>
+                        <span>50% Frequency</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: rgb(255, 0, 0);"></span>
+                        <span>0% Frequency</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('download', strategy='bb', stack_size=stack_size) }}" class="download-btn">Download BB CSV</a>
             </div>
         {% endif %}
     </div>
@@ -341,39 +490,103 @@
             document.getElementById('calculate-btn').disabled = true;
         });
 
-        // Add color coding to frequency values
-        document.addEventListener('DOMContentLoaded', function() {
-            const tables = document.querySelectorAll('table');
-            
-            tables.forEach(table => {
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length > 0) {
-                        const valueCell = cells[cells.length - 1];
-                        const valueText = valueCell.textContent.trim();
-                        const value = parseFloat(valueText);
-                        
-                        if (value >= 0.8) {
-                            valueCell.classList.add('high-value');
-                        } else if (value >= 0.4) {
-                            valueCell.classList.add('medium-value');
-                        } else {
-                            valueCell.classList.add('low-value');
-                        }
-                        
-                        // Add animation to rows
-                        row.style.animation = `fadeIn 0.3s forwards`;
-                        row.style.animationDelay = `${0.1 * (Array.from(rows).indexOf(row))}s`;
-                        row.style.opacity = 0;
+        // Hand mapping for range chart
+        const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+        const handMap = {};
+        ranks.forEach((rank1, i) => {
+            ranks.forEach((rank2, j) => {
+                if (i === j) {
+                    // Pairs (e.g., AA, KK)
+                    handMap[`${rank1}${rank2}`] = { row: i, col: j, type: 'pair' };
+                } else if (i < j) {
+                    // Suited hands (e.g., AKs, AQs)
+                    handMap[`${rank1}${rank2}s`] = { row: i, col: j, type: 'suited' };
+                } else {
+                    // Offsuit hands (e.g., AKo, AQo)
+                    handMap[`${rank1}${rank2}o`] = { row: i, col: j, type: 'offsuit' };
+                }
+            });
+        });
+
+        // Function to create range chart
+        function createRangeChart(containerId, strategy, evData) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            // Create labels for rows and columns
+            const rowLabels = document.createElement('div');
+            rowLabels.className = 'row-labels';
+            const colLabels = document.createElement('div');
+            colLabels.className = 'col-labels';
+            const labelsContainer = document.createElement('div');
+            labelsContainer.className = 'range-labels';
+            labelsContainer.appendChild(rowLabels);
+            labelsContainer.appendChild(colLabels);
+            container.parentElement.insertBefore(labelsContainer, container);
+
+            ranks.forEach(rank => {
+                const rowLabel = document.createElement('div');
+                rowLabel.className = 'label';
+                rowLabel.textContent = rank;
+                rowLabels.appendChild(rowLabel);
+
+                const colLabel = document.createElement('div');
+                colLabel.className = 'label';
+                colLabel.textContent = rank;
+                colLabels.appendChild(colLabel);
+            });
+
+            // Create grid cells
+            for (let i = 0; i < 13; i++) {
+                for (let j = 0; j < 13; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'range-cell';
+
+                    // Determine hand based on position in grid
+                    let hand, handType;
+                    if (i === j) {
+                        hand = `${ranks[i]}${ranks[j]}`;
+                        handType = 'pair';
+                    } else if (i < j) {
+                        hand = `${ranks[i]}${ranks[j]}s`;
+                        handType = 'suited';
+                    } else {
+                        hand = `${ranks[i]}${ranks[j]}o`;
+                        handType = 'offsuit';
                     }
-                });
-            });
-            
-            // Add classes to tables for styling
-            tables.forEach(table => {
-                table.classList.add('table');
-            });
+
+                    cell.classList.add(handType);
+                    cell.textContent = hand;
+
+                    // Get frequency and EV
+                    const freq = strategy[hand] || 0;
+                    const ev = evData[hand] || 0;
+
+                    // Color based on frequency (green for high, red for low)
+                    const intensity = Math.min(1, freq);
+                    const r = Math.round(255 * (1 - intensity));
+                    const g = Math.round(255 * intensity);
+                    cell.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
+
+                    // Tooltip with frequency and EV
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = `Freq: ${(freq * 100).toFixed(1)}%, EV: ${ev.toFixed(2)}`;
+                    cell.appendChild(tooltip);
+
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        // Render range charts
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if sb_strategy %}
+                createRangeChart('sb-range-chart', {{ sb_strategy | tojson }}, {{ sb_push_ev | tojson }});
+            {% endif %}
+            {% if bb_strategy %}
+                createRangeChart('bb-range-chart', {{ bb_strategy | tojson }}, {{ bb_call_ev | tojson }});
+            {% endif %}
         });
     </script>
 </body>

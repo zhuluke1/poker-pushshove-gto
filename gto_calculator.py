@@ -25,8 +25,8 @@ def calculate_push_fold_gto(effective_stack, sb_pos=True):
     sb_push_ev = {hand: 0.0 for hand in hands}  # EV of pushing
     bb_call_ev = {hand: 0.0 for hand in hands}  # EV of calling
 
-    iterations = 100
-    learning_rate = 0.01
+    iterations = 200  # Increased iterations
+    learning_rate = 0.005  # Reduced learning rate
     for _ in range(iterations):
         # BB's counter-strategy
         new_bb_call_freq = {}
@@ -41,7 +41,7 @@ def calculate_push_fold_gto(effective_stack, sb_pos=True):
                 ev_win = (effective_stack + pot) * equity
                 ev_lose = -effective_stack * (1 - equity)
                 bb_ev_call += push_prob * (ev_win + ev_lose) * get_combinations(sb_hand)
-                bb_ev_fold += push_prob * (-bb) * get_combinations(sb_hand)
+                bb_ev_fold += push_prob * 0 * get_combinations(sb_hand)  # Fixed: BB has already posted the BB
             bb_call_ev[bb_hand] = bb_ev_call  # Store EV of calling
             if bb_ev_call > bb_ev_fold:
                 new_bb_call_freq[bb_hand] = min(1.0, bb_call_freq[bb_hand] + learning_rate)
